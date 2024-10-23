@@ -1,17 +1,17 @@
 import json
-import os
 from collections.abc import AsyncGenerator, Generator
 from typing import Any
 
 import httpx
 
+from config import settings
 from schema import ChatHistory, ChatHistoryInput, ChatMessage, Feedback, StreamInput, UserInput
 
 
 class AgentClient:
     """Client for interacting with the agent service."""
 
-    def __init__(self, base_url: str = "http://localhost:80", timeout: float | None = None) -> None:
+    def __init__(self, base_url: str = settings.BASE_URL, timeout: float | None = None) -> None:
         """
         Initialize the client.
 
@@ -19,7 +19,7 @@ class AgentClient:
             base_url (str): The base URL of the agent service.
         """
         self.base_url = base_url
-        self.auth_secret = os.getenv("AUTH_SECRET")
+        self.auth_secret = settings.AUTH_SECRET
         self.timeout = timeout
 
     @property

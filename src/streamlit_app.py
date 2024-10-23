@@ -6,6 +6,8 @@ import streamlit as st
 from streamlit.runtime.scriptrunner import get_script_run_ctx
 
 from client import AgentClient
+from config import settings
+from config.llm import Provider
 from schema import ChatHistory, ChatMessage
 
 # A Streamlit app for interacting with the langgraph agent via a simple chat interface.
@@ -66,10 +68,10 @@ async def main() -> None:
         st.session_state.thread_id = thread_id
 
     models = {
-        "OpenAI GPT-4o-mini (streaming)": "gpt-4o-mini",
-        "Gemini 1.5 Flash (streaming)": "gemini-1.5-flash",
-        "Claude 3 Haiku (streaming)": "claude-3-haiku",
-        "llama-3.1-70b on Groq": "llama-3.1-70b",
+        f"OpenAI {settings.OPENAI_MODEL} (streaming)": Provider.OPENAI.value,
+        f"Google {settings.GOOGLE_MODEL} (streaming)": Provider.GOOGLE.value,
+        f"Anthropic {settings.ANTHROPIC_MODEL} (streaming)": Provider.ANTHROPIC.value,
+        f"{settings.GROQ_MODEL} on Groq": Provider.GROQ.value,
     }
     # Config options
     with st.sidebar:

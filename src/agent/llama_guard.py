@@ -1,10 +1,12 @@
-import os
 from enum import Enum
 
 from langchain_core.messages import AIMessage, AnyMessage, HumanMessage
 from langchain_core.prompts import PromptTemplate
 from langchain_groq import ChatGroq
 from pydantic import BaseModel, Field
+
+from config import settings
+from config.llm import GroqModelName
 
 
 class SafetyAssessment(Enum):
@@ -76,11 +78,13 @@ def parse_llama_guard_output(output: str) -> LlamaGuardOutput:
 
 class LlamaGuard:
     def __init__(self) -> None:
-        if os.getenv("GROQ_API_KEY") is None:
+        if not settings.GROQ_API_KEY:
             print("GROQ_API_KEY not set, skipping LlamaGuard")
             self.model = None
             return
-        self.model = ChatGroq(model="llama-guard-3-8b", temperature=0.0).with_config(
+        self.model = ChatGroq(
+            model=GroqModelName.LlAMA_GUARD_3_8B.value, temperature=0.0
+        ).with_config(
             tags=["llama_guard"],
         )
         self.prompt = PromptTemplate.from_template(llama_guard_instructions)

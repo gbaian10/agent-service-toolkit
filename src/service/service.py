@@ -17,6 +17,7 @@ from langgraph.graph.state import CompiledStateGraph
 from langsmith import Client as LangsmithClient
 
 from agent import research_assistant
+from config import settings
 from schema import (
     ChatHistory,
     ChatHistoryInput,
@@ -37,11 +38,11 @@ def verify_bearer(
         Depends(HTTPBearer(description="Please provide AUTH_SECRET api key.")),
     ],
 ) -> None:
-    if http_auth.credentials != os.getenv("AUTH_SECRET"):
+    if http_auth.credentials != settings.AUTH_SECRET.get_secret_value():
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
 
-bearer_depend = [Depends(verify_bearer)] if os.getenv("AUTH_SECRET") else None
+bearer_depend = [Depends(verify_bearer)] if settings.AUTH_SECRET else None
 
 
 @asynccontextmanager
@@ -207,11 +208,7 @@ def history(input: ChatHistoryInput) -> ChatHistory:
     agent: CompiledStateGraph = app.state.agent
     try:
         state_snapshot = agent.get_state(
-            config=RunnableConfig(
-                configurable={
-                    "thread_id": input.thread_id,
-                }
-            )
+            config=RunnableConfig(configurable={"thread_id": input.thread_id})
         )
         messages: list[AnyMessage] = state_snapshot.values["messages"]
         chat_messages: list[ChatMessage] = []

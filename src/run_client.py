@@ -9,7 +9,7 @@ async def amain() -> None:
     client = AgentClient()
 
     print("Chat example:")
-    response = await client.ainvoke("Tell me a brief joke?", model="llama-3.1-70b")
+    response = await client.ainvoke("Tell me a brief joke?", model="openai")
     response.pretty_print()
 
     print("\nStream example:")
@@ -28,7 +28,7 @@ asyncio.run(amain())
 client = AgentClient()
 
 print("Chat example:")
-response = client.invoke("Tell me a brief joke?", model="llama-3.1-70b")
+response = client.invoke("Tell me a brief joke?", model="openai")
 response.pretty_print()
 
 print("\nStream example:")

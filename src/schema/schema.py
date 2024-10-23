@@ -9,7 +9,10 @@ from langchain_core.messages import (
     message_to_dict,
     messages_from_dict,
 )
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+from config import settings
+from config.llm import Provider
 
 
 def convert_message_content_to_string(content: str | list[str | dict]) -> str:
@@ -26,16 +29,21 @@ def convert_message_content_to_string(content: str | list[str | dict]) -> str:
 
 
 class UserInput(BaseModel):
+    model_config = ConfigDict(use_enum_values=True)
     """Basic user input for the agent."""
 
     message: str = Field(
         description="User input to the agent.",
         examples=["What is the weather in Tokyo?"],
     )
-    model: str = Field(
-        description="LLM Model to use for the agent.",
-        default="gpt-4o-mini",
-        examples=["gpt-4o-mini", "llama-3.1-70b"],
+    model: Provider = Field(
+        description=f"""LLM Model to use for the agent.\n
+        {Provider.OPENAI.value:<10}: {settings.OPENAI_MODEL}\n
+        {Provider.ANTHROPIC.value:<10}: {settings.ANTHROPIC_MODEL}\n
+        {Provider.GOOGLE.value:<10}: {settings.GOOGLE_MODEL}\n
+        {Provider.GROQ.value:<10}: {settings.GROQ_MODEL}\n
+        """,
+        default=Provider.OPENAI,
     )
     thread_id: str | None = Field(
         description="Thread ID to persist and continue a multi-turn conversation.",
